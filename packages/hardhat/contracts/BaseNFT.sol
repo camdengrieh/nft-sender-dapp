@@ -20,7 +20,7 @@ contract BaseNFT is ERC1155, Ownable {
     }
 
     function mintMultipleToAddresses(address[] memory addresses) public onlyOwner {
-        for (uint256 i; i < 400; ++i) {
+        for (uint256 i; i < addresses.length; ++i) {
             _mint(addresses[i], 1, 1, "");
             emit Mint(addresses[i], 1, 1);
         }

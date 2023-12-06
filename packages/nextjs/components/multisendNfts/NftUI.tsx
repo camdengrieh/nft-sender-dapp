@@ -37,15 +37,7 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
     //args: [`[${addressesRef.current?.value.split("\n")}]`],
   });
 
-  const { writeAsync: writeMint } = useContractWrite(mintConfig);
-
-  // if (contractAddress) {
-  //   return (
-  //     <div className="mt-14">
-  //       <Spinner width="50px" height="50px" />
-  //     </div>
-  //   );
-  // }
+  const { write: writeMint, data, isLoading, isSuccess } = useContractWrite(mintConfig);
 
   const changeHandler = (event: any) => {
     console.log(event.target.files[0]);
@@ -122,6 +114,8 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
                 <button className="absolute right-10 " disabled={!writeMint} onClick={() => writeMint?.()}>
                   Mint Batches{" "}
                 </button>
+                {isLoading && <div>Check Wallet</div>}
+                {isSuccess && <div>Transaction: {JSON.stringify(data)}</div>}
               </div>
             </div>
           </div>
