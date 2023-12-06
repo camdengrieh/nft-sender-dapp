@@ -5,8 +5,6 @@ async function main() {
   const ContractFactory = await ethers.getContractFactory("MetawinMillionaireMarketing");
 
   //Get the first account from the list of accounts
-  const accounts = await ethers.getSigners();
-
   async function withTimeout<T>(promise: Promise<T>, timeoutMillis: number) {
     return Promise.race([
       promise,
