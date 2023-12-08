@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 //import { Spinner } from "~~/components/assets/Spinner";
 import Papa from "papaparse";
+//import { Toaster } from "react-hot-toast";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { abi as basenft } from "~~/abis/baseNFT";
 import { Address, Balance } from "~~/components/scaffold-eth";

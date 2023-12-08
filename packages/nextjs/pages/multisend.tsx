@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { abi as baseNftAbi } from "../abis/baseNFT";
 import { readContract } from "@wagmi/core";
 import type { NextPage } from "next";
 import { useLocalStorage } from "usehooks-ts";
-import { getContract } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { NftUI } from "~~/components/multisendNfts";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
-import { GenericContract } from "~~/utils/scaffold-eth/contract";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedNftContract";
 
@@ -23,33 +21,9 @@ const Multisend: NextPage = () => {
     args: [account.address],
   });
 
-  const [nftContracts, setNftContracts] = useState([
-    getContract({ address: nftContractAddresses ? nftContractAddresses[0] : "", abi: baseNftAbi }) as GenericContract,
-  ]);
-
   const [nftContractNames, setNftContractNames] = useState([] as string[]);
 
-  useMemo(() => {
-    const nftContractsFromAddress = [];
-    if (nftContractAddresses !== undefined) {
-      for (const address of nftContractAddresses) {
-        nftContractsFromAddress.push(getContract({ address: address, abi: baseNftAbi }));
-      }
-      setNftContracts(nftContractsFromAddress as GenericContract[]);
-    }
-  }, [nftContractAddresses]);
-
-  const [selectedContract, setSelectedContract] = useLocalStorage(
-    selectedContractStorageKey,
-    getContract({ address: nftContractAddresses ? nftContractAddresses[0] : "", abi: baseNftAbi }) as GenericContract,
-  );
-
-  // const { data: contractName } = useContractRead({
-  //   abi: baseNftAbi,
-  //   address: selectedContract.address,
-  //   functionName: "name",
-  //   args: [],
-  // }) as { data: string };
+  const [selectedContract, setSelectedContract] = useLocalStorage(selectedContractStorageKey, "");
 
   useEffect(() => {
     const fetchContractNames = async () => {
@@ -80,27 +54,27 @@ const Multisend: NextPage = () => {
           <p className="text-3xl mt-14">No contracts found!</p>
         ) : (
           <>
-            {nftContracts && nftContracts.length > 1 && (
+            {nftContractAddresses && nftContractAddresses.length > 1 && (
               <div className="flex flex-row gap-2 w-full max-w-7xl pb-1 px-6 lg:px-10 flex-wrap">
-                {nftContracts.map(nftContract => (
+                {nftContractAddresses.map(nftAddress => (
                   <button
                     className={`btn btn-secondary btn-sm normal-case font-thin ${
-                      nftContract.address === selectedContract.address ? "bg-base-300" : "bg-base-100"
+                      nftAddress === selectedContract ? "bg-base-300" : "bg-base-100"
                     }`}
-                    key={nftContract.address}
-                    onClick={() => setSelectedContract(nftContract)}
+                    key={nftAddress}
+                    onClick={() => setSelectedContract(nftAddress)}
                   >
-                    {nftContractNames[nftContracts.indexOf(nftContract)]}
+                    {nftContractNames[nftContractAddresses.indexOf(nftAddress)]}
                   </button>
                 ))}
               </div>
             )}
-            {nftContracts?.map(nftContract => (
+            {nftContractAddresses?.map(nftAddress => (
               <NftUI
-                key={nftContract.address}
-                contractAddress={nftContract.address}
-                contractName={nftContractNames[nftContracts.indexOf(nftContract)]}
-                className={nftContract.address === selectedContract.address ? "" : "hidden"}
+                key={nftAddress}
+                contractAddress={nftAddress}
+                contractName={nftContractNames[nftContractAddresses.indexOf(nftAddress)]}
+                className={nftAddress === selectedContract ? "" : "hidden"}
               />
             ))}
           </>
