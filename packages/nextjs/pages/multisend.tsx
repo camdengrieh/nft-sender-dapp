@@ -12,22 +12,20 @@ const selectedContractStorageKey = "scaffoldEth2.selectedNftContract";
 
 const Multisend: NextPage = () => {
   //get address of user
-  const account = useAccount();
+  const { address } = useAccount();
 
-  //get addresses of contracts deployed by user
-  const { data: nftContractAddresses } = useScaffoldContractRead({
+  const { data: nftContractAddresses, isLoading: addressesLoading } = useScaffoldContractRead({
     contractName: "NFTFactory",
     functionName: "getDeployedNFTs",
-    args: [account.address],
+    args: [address],
   });
-
   const [nftContractNames, setNftContractNames] = useState([] as string[]);
 
   const [selectedContract, setSelectedContract] = useLocalStorage(selectedContractStorageKey, "");
 
   useEffect(() => {
     const fetchContractNames = async () => {
-      if (account && nftContractAddresses !== undefined) {
+      if (nftContractAddresses !== undefined) {
         const contractNames = await Promise.all(
           nftContractAddresses.map(nftAddress =>
             readContract({
@@ -44,13 +42,13 @@ const Multisend: NextPage = () => {
     };
 
     fetchContractNames();
-  }, [nftContractAddresses, account]);
+  }, [nftContractAddresses]);
 
   return (
     <>
       <MetaHeader title="NFT Contract Creator" description="Create your NFT and deploy" />
       <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center">
-        {nftContractAddresses?.length === 0 ? (
+        {nftContractAddresses?.length === 0 && addressesLoading ? (
           <p className="text-3xl mt-14">No contracts found!</p>
         ) : (
           <>
