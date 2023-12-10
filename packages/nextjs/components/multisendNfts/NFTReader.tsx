@@ -15,24 +15,33 @@ export const NFTReader = ({ contractAddress }: { contractAddress: string }) => {
 
   useEffect(() => {
     if (nftMetadata) {
-      fetch(nftMetadata.toString())
-        .then(response => response.json())
-        .then(data => {
-          setNftImage(data.image);
-        });
+      const fetchMetadata = async () => {
+        try {
+          const uriResponse = await fetch(nftMetadata.toString());
+          const json = await uriResponse.json();
+          setNftImage(json.image);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      fetchMetadata();
     }
   }, [nftMetadata]);
 
   return (
     <>
       <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center">
-        {metaDataLoading ? <p className="text-3xl mt-14">Loading...</p> : <div></div>}
-      </div>
-      <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center">
-        {nftImage ? (
-          <Image width="50" height="50" src={nftImage} alt="NFT" />
+        {metaDataLoading ? (
+          <p className="text-3xl mt-14">Loading...</p>
         ) : (
-          <p className="text-3xl mt-14">No NFT found!</p>
+          <div className="flex flex-col gap-y-3 lg:gap-y-4 py-4 lg:py-6 justify-center items-center">
+            {nftImage ? (
+              <Image width="200" height="200" src={nftImage} alt="NFT" />
+            ) : (
+              <p className="text-3xl mt-14">No Image found!</p>
+            )}
+          </div>
         )}
       </div>
     </>

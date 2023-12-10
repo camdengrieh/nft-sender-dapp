@@ -7,6 +7,7 @@ import Papa from "papaparse";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { abi as basenft } from "~~/abis/baseNFT";
 import { Address, Balance } from "~~/components/scaffold-eth";
+import { useFetchNftHolderCount } from "~~/hooks/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
@@ -20,10 +21,11 @@ type ContractUIProps = {
  * UI component to interface with deployed contracts.
  **/
 export const NftUI = ({ contractAddress, contractName, className = "" }: ContractUIProps) => {
-  //const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
   const { address: account } = useAccount();
 
   const [addresses, setAddresses] = useState([`${account}`] as string[]);
+
+  const { nftHolderCount } = useFetchNftHolderCount(contractAddress);
 
   const addressesRef = useRef<HTMLTextAreaElement>(null);
 
@@ -84,6 +86,17 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
               </p>
             )}
           </div>
+          <div className="bg-base-100 border-base-300 border shadow-md shadow-secondary rounded-3xl px-6 lg:px-8 mb-6 space-y-1 py-4">
+            <div className="flex">
+              <div className="flex flex-col gap-1">
+                <span className="font-bold"> Holder Details:</span>
+                <div className="flex gap-1 items-center">
+                  <span className="font-bold text-sm">Holder Count:</span>
+                  <span className="px-0 text-sm"> {nftHolderCount} </span>
+                </div>{" "}
+              </div>
+            </div>
+          </div>
         </div>
         <div className="col-span-1 lg:col-span-2 flex flex-col gap-6">
           <div className="z-10">
@@ -106,14 +119,16 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
                 <textarea
                   ref={addressesRef}
                   defaultValue={addresses.join("\n")}
-                  className=" text-m min-w-[100%] mt-5"
+                  className=" text-m min-w-[100%] mt-5 text-black border-black border-2 rounded-xl p-2"
                   placeholder="Paste addresses here"
-                >
-                  {/* {addresses.map(address => `${address}\n`).join("")} */}
-                </textarea>
+                ></textarea>
               </div>
               <div className="p-5 divide-y divide-base-300 mb-8">
-                <button className="absolute right-10 " disabled={!writeMint} onClick={() => writeMint?.()}>
+                <button
+                  className="absolute right-10 bg-base-300 p-2 rounded-xl hover:bg-base-200"
+                  disabled={!writeMint}
+                  onClick={() => writeMint?.()}
+                >
                   Mint Batches{" "}
                 </button>
                 {isLoading && <div>Check Wallet</div>}
@@ -121,15 +136,6 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
               </div>
             </div>
           </div>
-          {/* <div className="z-10">
-            <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-              <div className="h-[5rem] w-[5.5rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
-                <div className="flex items-center justify-center space-x-2">
-                  <p className="my-0 text-sm">Write</p>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>
