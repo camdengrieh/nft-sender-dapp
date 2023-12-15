@@ -21,7 +21,10 @@ const Multisend: NextPage = () => {
   });
   const [nftContractNames, setNftContractNames] = useState([] as string[]);
 
-  const [selectedContract, setSelectedContract] = useLocalStorage(selectedContractStorageKey, "");
+  const [selectedContract, setSelectedContract] = useLocalStorage(
+    selectedContractStorageKey,
+    nftContractAddresses ? nftContractAddresses[0] : "0xbA5231D5DF6C70850f850038456D0E085d8f4657",
+  );
 
   useEffect(() => {
     const fetchContractNames = async () => {
