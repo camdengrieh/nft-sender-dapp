@@ -136,9 +136,6 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
               </div>
             </div>
           </div>
-          <div>
-            <iframe src="https://dune.com/embeds/3277778/5486482" />
-          </div>
         </div>
       </div>
     </div>
