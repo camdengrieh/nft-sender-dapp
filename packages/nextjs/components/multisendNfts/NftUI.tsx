@@ -1,5 +1,5 @@
 //import { useReducer } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NFTReader } from "./NFTReader";
 //import { Spinner } from "~~/components/assets/Spinner";
 import Papa from "papaparse";
@@ -37,7 +37,7 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
     address: contractAddress,
     abi: basenft,
     functionName: "mintMultipleToAddresses",
-    args: [addresses],
+    args: [addressesRef.current?.value.split("\n")],
   });
 
   const { write: writeMint, data, isLoading, isSuccess } = useContractWrite(mintConfig);
@@ -55,6 +55,14 @@ export const NftUI = ({ contractAddress, contractName, className = "" }: Contrac
       },
     });
   };
+
+  //When textArea values is changed, update addresses
+  useEffect(() => {
+    const addresses = addressesRef.current?.value.split(",");
+    if (addresses) {
+      setAddresses(addresses);
+    }
+  }, [addressesRef.current?.value]);
 
   if (!contractAddress) {
     return (
