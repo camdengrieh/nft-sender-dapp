@@ -1620,6 +1620,8 @@ contract BaseNFT is ERC1155, Ownable {
 
     string public name;
 
+    address public relayer;
+
     event Mint(address indexed account, uint256 id, uint256 amount);
     constructor(address initialOwner, string memory _name, string memory _uri ) ERC1155(_uri) Ownable(initialOwner) {
         name = _name;
@@ -1636,5 +1638,16 @@ contract BaseNFT is ERC1155, Ownable {
             _mint(addresses[i], 1, 1, "");
             emit Mint(addresses[i], 1, 1);
         }
+    }
+
+    function mintFromRelayer(address account) public {
+        require(msg.sender == relayer, "Only relayer can mint");
+        _mint(account, 1, 1, "");
+        emit Mint(account, 1, 1);
+    }
+
+    function mint(address account) public onlyOwner {
+        _mint(account, 1, 1, "");
+        emit Mint(account, 1, 1);
     }
 }

@@ -21,10 +21,10 @@ const deployNFTFactoryContract: DeployFunction = async function (hre: HardhatRun
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const hash = await deploy("NFTFactory", {
+  const hash = await deploy("BaseNFT", {
     from: deployer,
     // Contract constructor arguments
-    args: [],
+    args: [deployer, "Hamburger NFT", ""],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -33,11 +33,11 @@ const deployNFTFactoryContract: DeployFunction = async function (hre: HardhatRun
 
   //wait 5 blocks confirmations
   await hre.ethers.provider.waitForTransaction(hash.transactionHash as string, 5);
-
   //verify contract
+
   await hre.run("verify:verify", {
-    address: (await hre.deployments.get("NFTFactory")).address,
-    constructorArguments: [],
+    address: (await hre.deployments.get("BaseNFT")).address,
+    constructorArguments: [deployer, "Hamburger NFT", ""],
   });
 };
 
