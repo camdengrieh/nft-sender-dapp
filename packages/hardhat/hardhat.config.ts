@@ -10,10 +10,10 @@ import "@matterlabs/hardhat-zksync-verify";
 // You can get your own at https://dashboard.alchemyapi.io
 const providerApiKey = process.env.ALCHEMY_API_KEY || "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 // If not set, it uses the hardhat account 0 private key.
-const deployerPrivateKey =
-  process.env.DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY ?? "";
 // If not set, it uses ours Etherscan default API key.
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+const arbiscanApiKey = process.env.ARBISCAN_API_KEY || "YH32Y1BW7S274WTD6FY4IWYJH52VIX6UGU";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  defaultNetwork: "sepolia",
+  defaultNetwork: "arbitrum",
   namedAccounts: {
     deployer: {
       // By default, it will take the first Hardhat account as the deployer
@@ -60,6 +60,10 @@ const config: HardhatUserConfig = {
     },
     arbitrumGoerli: {
       url: `https://arb-goerli.g.alchemy.com/v2/${providerApiKey}`,
+      accounts: [deployerPrivateKey],
+    },
+    arbitrumSepolia: {
+      url: `https://arbitrum-sepolia.blockpi.network/v1/rpc/public`,
       accounts: [deployerPrivateKey],
     },
     optimism: {
@@ -126,7 +130,27 @@ const config: HardhatUserConfig = {
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
-    apiKey: `${etherscanApiKey}`,
+    apiKey: {
+      arbitrumSepolia: `${arbiscanApiKey}`,
+      arbitrum: `${arbiscanApiKey}`,
+      mainnet: `${etherscanApiKey}`,
+      sepolia: `${etherscanApiKey}`,
+    },
+    customChains: [
+      {
+        network: "arbitrumSepolia",
+        chainId: 421614,
+        urls: {
+          apiURL: "https://api-sepolia.arbiscan.io/api",
+          browserURL: "https://sepolia.arbiscan.io",
+        },
+      },
+      {
+        network: "arbitrum",
+        chainId: 42161,
+        urls: { apiURL: "https://api.arbiscan.io/api", browserURL: "https://arbiscan.io" },
+      },
+    ],
   },
 };
 

@@ -31,10 +31,8 @@ const deployNFTFactoryContract: DeployFunction = async function (hre: HardhatRun
     autoMine: true,
   });
 
-  //wait 5 blocks confirmations
   await hre.ethers.provider.waitForTransaction(hash.transactionHash as string, 5);
 
-  //verify contract
   await hre.run("verify:verify", {
     address: (await hre.deployments.get("NFTFactory")).address,
     constructorArguments: [],

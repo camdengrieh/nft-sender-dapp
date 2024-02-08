@@ -21,28 +21,26 @@ const deployNFTFactoryContract: DeployFunction = async function (hre: HardhatRun
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const hash = await deploy("BaseNFT", {
+  const hash = await deploy("HamburgerOnly", {
     from: deployer,
     // Contract constructor arguments
-    args: [deployer, "Hamburger NFT", ""],
+    args: ["0x13503B622abC0bD30A7e9687057DF6E8c42Fb928"],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
 
-  //wait 5 blocks confirmations
   await hre.ethers.provider.waitForTransaction(hash.transactionHash as string, 5);
-  //verify contract
 
   await hre.run("verify:verify", {
-    address: (await hre.deployments.get("BaseNFT")).address,
-    constructorArguments: [deployer, "Hamburger NFT", ""],
+    address: (await hre.deployments.get("HamburgerOnly")).address,
+    constructorArguments: ["0x13503B622abC0bD30A7e9687057DF6E8c42Fb928"],
   });
 };
 
 export default deployNFTFactoryContract;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags BaseNFT
-deployNFTFactoryContract.tags = ["BaseNFT"];
+// e.g. yarn deploy --tags HamburgerOnly
+deployNFTFactoryContract.tags = ["HamburgerOnly"];

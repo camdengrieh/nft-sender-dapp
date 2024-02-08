@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract BaseNFT is ERC1155, Ownable {
+contract MetawinNFT is ERC1155, Ownable {
 	string public name;
 
 	uint256 public constant PLATINUM = 8;
@@ -22,6 +22,8 @@ contract BaseNFT is ERC1155, Ownable {
 
 	event Mint(address indexed account, uint256 id, uint256 amount);
 
+
+	//"https://ipfs.io/ipfs/bafybeihjjkwdrxxjnuwevlqtqmh3iegcadc32sio4wmo7bv2gbf34qs34a/{id}.json"
 	constructor(
 		address initialOwner,
 		string memory _name,
@@ -32,6 +34,7 @@ contract BaseNFT is ERC1155, Ownable {
 		emit Mint(initialOwner, 1, 1);
 	}
 
+	// Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
 	function setURI(string memory newuri) public onlyOwner {
 		_setURI(newuri);
 	}
@@ -53,22 +56,23 @@ contract BaseNFT is ERC1155, Ownable {
 	function mintMultipleFromRelayer(
 		address[] memory addresses,
 		uint256[] memory _ids
-	) public onlyOwner {
+	) external {
+        require(msg.sender == relayer, "Only relayer can mint");
 		for (uint256 i; i < addresses.length; ++i) {
 			_mint(addresses[i], _ids[i], 1, "");
 			emit Mint(addresses[i], _ids[i], 1);
 		}
 	}
 
-	function mintFromRelayer(address account) public {
+	function mintFromRelayer(address account, uint256 _id) external {
 		require(msg.sender == relayer, "Only relayer can mint");
-		_mint(account, 1, 1, "");
-		emit Mint(account, 1, 1);
+		_mint(account, _id, 1, "");
+		emit Mint(account, _id, 1);
 	}
 
-	function mint(address account) public onlyOwner {
-		_mint(account, 1, 1, "");
-		emit Mint(account, 1, 1);
+	function mint(address account, uint256 _id) external onlyOwner {
+		_mint(account, _id, 1, "");
+		emit Mint(account, _id, 1);
 	}
 
 	function uri(
@@ -77,7 +81,7 @@ contract BaseNFT is ERC1155, Ownable {
 		return
 			string(
 				abi.encodePacked(
-					"https://ipfs.io/ipfs/bafybeihjjkwdrxxjnuwevlqtqmh3iegcadc32sio4wmo7bv2gbf34qs34a/",
+					"https://bafybeihdsavp5sdgllsh5oa33iorlnkihjtmrnafsszqacnxm4hkfcjkfu.ipfs.dweb.link/", //use _uri instead
 					Strings.toString(_tokenid),
 					".json"
 				)
